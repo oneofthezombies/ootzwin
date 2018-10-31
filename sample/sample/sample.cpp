@@ -1,6 +1,20 @@
 #include <Windows.h>
 
-#include "ootzwin/launcher.h"
+
+#include "ootzwin/app.h"
+
+class Foo : public ootzwin::Updatable
+{
+public:
+    Foo() {}
+    virtual ~Foo() {}
+
+    // Inherited via Updatable
+    virtual bool update(const float deltaTime) override
+    {
+        return true;
+    }
+};
 
 
 int APIENTRY WinMain(_In_ HINSTANCE hInstance, 
@@ -10,14 +24,9 @@ int APIENTRY WinMain(_In_ HINSTANCE hInstance,
 {
     using namespace ootzwin;
 
-    Launcher launcher("sampleApp", false, 800, 600);
+    App app("sampleApp", false, 800, 600);
 
-    auto app = [](const float deltaTime) -> bool 
-    {
-        return true;
-    };
+    app.addUpdatable("Foo", new Foo());
 
-    launcher.addApp(app);
-
-    return launcher.run();
+    return app.run();
 }

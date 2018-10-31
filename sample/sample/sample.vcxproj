@@ -129,11 +129,11 @@
   <ItemGroup>
     <ClCompile Include="ootzwin\helper.cpp" />
     <ClCompile Include="ootzwin\helper.h" />
-    <ClCompile Include="ootzwin\launcher.cpp" />
+    <ClCompile Include="ootzwin\app.cpp" />
     <ClCompile Include="sample.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ootzwin\launcher.h" />
+    <ClInclude Include="ootzwin\app.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

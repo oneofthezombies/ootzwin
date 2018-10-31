@@ -24,12 +24,12 @@
     <ClCompile Include="ootzwin\helper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ootzwin\launcher.cpp">
+    <ClCompile Include="ootzwin\app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ootzwin\launcher.h">
+    <ClInclude Include="ootzwin\app.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

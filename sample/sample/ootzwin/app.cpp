@@ -1,4 +1,7 @@
-#include "launcher.h"
+#include "app.h"
+
+
+#include <algorithm>
 
 
 #include "ootzwin/helper.h"
@@ -8,10 +11,16 @@ namespace ootzwin
 {
 
 
-bool Launcher::_isInstantiated = false;
+bool App::_isInstantiated = false;
 
 
-int Launcher::run()
+void App::removeUpdatable(const std::string& key)
+{
+    _updatables.erase(key);
+}
+
+
+int App::run()
 {
     MSG msg;
     memset(&msg, 0, sizeof msg);
@@ -23,18 +32,37 @@ int Launcher::run()
         {
             // escape loop
             if (msg.message == WM_QUIT)
+            {
                 break;
+            }
 
             TranslateMessage(&msg);
             DispatchMessageA(&msg);
         }
         else
         {
-            if (false == _app ||
-                false == _app(0.0f))
+            bool isSuccess = true;
+            for (const auto& kv : _updatables)
+            {
+                const auto& updatable = kv.second;
+
+                if (false == updatable ||
+                    false == updatable->update(0.0f))
+                {
+                    isSuccess = false;
+                }
+            }
+
+            if (false == isSuccess)
+            {
                 break;
+            }
         }
     }
+
+
+    // clear updatables
+    _updatables.clear();
 
 
     // clear display settings
@@ -59,7 +87,7 @@ int Launcher::run()
 }
 
 
-LRESULT CALLBACK Launcher::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK App::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPARAM lParam)
 {
     switch (uMessage)
     {
@@ -69,13 +97,11 @@ LRESULT CALLBACK Launcher::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPAR
             return 0;
         }
 
-
         case WM_CLOSE:
         {
             PostQuitMessage(0);
             return 0;
         }
-
 
         default:
         {
@@ -85,9 +111,13 @@ LRESULT CALLBACK Launcher::WndProc(HWND hWnd, UINT uMessage, WPARAM wParam, LPAR
 }
 
 
-Launcher::Launcher(const char* appName, 
-                   const bool isFullScreen, 
-                   const int width, const int height)
+App::App(const char* appName, 
+         const bool isFullScreen, 
+         const int width, const int height)
+    : _hWnd(nullptr)
+    , _hInstance(nullptr)
+    , _appName()
+    , _updatables()
 {
     // check duplicate
     if (false == _isInstantiated)
@@ -197,20 +227,20 @@ Launcher::Launcher(const char* appName,
 }
 
 
-Launcher::~Launcher()
+App::~App()
 {
     _isInstantiated = false;
 }
 
 
-void Launcher::exitError(const char* reason)
+void App::exitError(const char* reason)
 {
     MessageBoxA(nullptr, reason, "Error", MB_OK);
     ExitProcess(0);
 }
 
 
-void Launcher::exitSystemError(const char* functionName)
+void App::exitSystemError(const char* functionName)
 {
     const DWORD dwErrorCode = GetLastError();
 
